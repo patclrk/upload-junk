@@ -1,0 +1,16 @@
+# Copy this file to terraform.tfvars and customize the values
+
+# Required: Choose a globally unique bucket name
+bucket_name = "my-unique-upload-bucket-12345"
+
+# Optional: AWS region (default: us-east-1)
+# aws_region = "us-east-1"
+
+# Optional: Environment tag (default: personal)
+# environment = "personal"
+
+# Optional: Set to true to make bucket private (default: false = public)
+# make_private = false
+
+# Optional: Enable versioning (default: false)
+# enable_versioning = false
