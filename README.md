@@ -1,11 +1,15 @@
 # upload-junk
 
-OpenTofu configuration for creating a public/private S3 bucket for sharing files.
+Because sometimes you need to upload junk, then share that junk with other people.
+
+This repo contains IaC to manage an S3 bucket so you can avoid the $0.03 monthly AWS bill because you keep forgetting to delete that bucket you created a year ago because you're too lazy to click around the AWS console.
+
 
 ## Prerequisites
 
 - [OpenTofu](https://opentofu.org/docs/intro/install/) installed locally
-- AWS credentials configured (via `~/.aws/credentials`, environment variables, or AWS CLI)
+- AWS credentials configured
+- Optional: create an IAM user and policy for bucket operations (see `policy.json`)
 
 ## Quick Start
 
@@ -38,57 +42,49 @@ OpenTofu configuration for creating a public/private S3 bucket for sharing files
 
 The bucket is **public by default**. To make it private:
 
-**Option 1:** Update `terraform.tfvars`:
-```hcl
-make_private = true
-```
-Then run `tofu apply`.
+1. Update `terraform.tfvars`:
 
-**Option 2:** Override on the command line:
+   ```hcl
+   make_private = true
+   ```
+2. Then run `tofu apply`.
+
+#### Create presigned URL
+You can share junk via presigned URLs in private buckets (default 1 hour)
 ```bash
-tofu apply -var="make_private=true"
+aws s3 presign s3://your-bucket-name/yourfile.txt --profile upload-junk
 ```
-
-To make it public again:
-```bash
-tofu apply -var="make_private=false"
-```
-
-## Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `bucket_name` | Globally unique S3 bucket name | (required) |
-| `aws_region` | AWS region for the bucket | `us-east-1` |
-| `make_private` | Set `true` to block public access | `false` |
-| `enable_versioning` | Enable S3 versioning | `false` |
-| `environment` | Environment tag | `personal` |
-
-## Outputs
-
-After applying, you'll see:
-- `bucket_name` - The bucket name
-- `bucket_domain_name` - The bucket's domain
-- `public_url_pattern` - URL pattern for accessing files (when public)
-- `is_public` - Whether the bucket is currently public
 
 ## Uploading Files
 
-Once your bucket is created, upload files via AWS CLI:
+Via AWS CLI:
 ```bash
 aws s3 cp myfile.txt s3://your-bucket-name/
 ```
 
 Access public files at:
 ```
-https://your-bucket-name.s3.amazonaws.com/myfile.txt
+https://your-bucket-name.s3.amazonaws.com/yourfile.txt
 ```
 
 ## Destroy
 
-To delete the bucket and all resources:
+First, delete everything in the bucket:
+```bash
+aws s3 rm s3://your-bucket-name --recursive --profile upload-junk
+```
+If you enabled versioning:
+```bash
+aws s3api delete-objects \
+  --bucket your-bucket-name \
+  --delete "$(aws s3api list-object-versions \
+    --bucket your-bucket-name \
+    --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}' \
+    --output json)" \
+  --profile upload-junk
+```
+
+Delete the bucket:
 ```bash
 tofu destroy
 ```
-
-> **Note:** The bucket must be empty before it can be destroyed.

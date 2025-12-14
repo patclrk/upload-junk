@@ -20,7 +20,6 @@ resource "aws_s3_bucket" "upload_bucket" {
 
   tags = {
     Name        = var.bucket_name
-    Environment = var.environment
     ManagedBy   = "OpenTofu"
   }
 }

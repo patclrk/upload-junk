@@ -15,12 +15,6 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "environment" {
-  description = "Environment tag for the bucket"
-  type        = string
-  default     = "personal"
-}
-
 variable "make_private" {
   description = "Set to true to make the bucket private, false for public access"
   type        = bool
