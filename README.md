@@ -1,9 +1,8 @@
 # upload-junk
 
-Because sometimes you need to upload junk, then share that junk with other people.
+Because sometimes you need to upload junk and share it with people.
 
-This repo contains IaC to manage an S3 bucket so you can avoid the $0.03 monthly AWS bill because you keep forgetting to delete that bucket you created a year ago because you're too lazy to click around the AWS console.
-
+This repo contains simple IaC to setup and teardown an S3 bucket. Bucket is public-read by default and can be modified in `tfvars`.
 
 ## Prerequisites
 
