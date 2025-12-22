@@ -1,6 +1,6 @@
 # upload-junk
 
-Because sometimes you need to upload junk and share it with people.
+Because sometimes you need to upload junk (and share your junk with others).
 
 This repo contains simple IaC to setup and teardown an S3 bucket. Bucket is public-read by default and can be modified in `tfvars`.
 
